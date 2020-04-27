@@ -2,6 +2,7 @@
 
 import cairo
 import sys
+from math import atan, sqrt
 
 width  = 297.0
 height = 210.0
@@ -68,20 +69,32 @@ def draw_shape ():
         
         c.restore()
 
+def draw_surface_boundary (length):
+    c.save()
+    c.move_to(0, 0)
+    c.line_to(0, length)
+    c.set_source_rgb(0, 0, 1)
+    c.set_line_width(mm(ssbound))
+    c.stroke()
+    c.restore()
+
 ###############################################################################
 ##################################################################### main ####
 
 # guard: command line arguments
-if len(sys.argv) != 6:
-    print('Syntax: %s HEIGHT WIDE NARROW CUT FILENAME' % sys.argv[0])
-    print('        %s 130 43 25 93 output.pdf' % sys.argv[0])
+if len(sys.argv) != 7:
+    print('Syntax: %s HEIGHT WIDE NARROW CUT SURFACE_BOUNDARY FILENAME' % sys.argv[0])
+    print('        %s 130 43 25 93 10 output.pdf' % sys.argv[0])
     sys.exit(1)
 
 sheight  = float(sys.argv[1])
 swide    = float(sys.argv[2])
 snarrow  = float(sys.argv[3])
 scut     = float(sys.argv[4])
-filename =       sys.argv[5]
+ssbound  = float(sys.argv[5])
+filename =       sys.argv[6]
+
+saheight = sqrt(sheight**2 + (swide-snarrow)**2)
 
 # initialize canvas
 
@@ -96,4 +109,15 @@ c.line_to(110, 160)
 c.set_source_rgb(0, 0, 0)
 c.stroke()
 
-draw_shape()
+c.save()
+for i in range(2):
+    if i!=0:
+        draw_surface_boundary(saheight)
+    c.translate(mm(ssbound)/2, 0)
+    draw_shape()
+    c.translate(swide, 0)
+    c.rotate(atan((swide-snarrow)/sheight))
+    c.translate(mm(ssbound)/2, 0)
+c.restore()
+
+draw_surface_boundary(sheight)
