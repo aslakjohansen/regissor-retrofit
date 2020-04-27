@@ -104,11 +104,6 @@ c.set_line_width(mm(0.5))
 c.scale(MM2POINTS, MM2POINTS)
 c.translate(width/2, baseline)
 
-c.move_to(10, 10)
-c.line_to(110, 160)
-c.set_source_rgb(0, 0, 0)
-c.stroke()
-
 for mirror in [True, False]:
     c.save()
     if mirror:
