@@ -3,10 +3,15 @@
 import cairo
 import sys
 
-width  = 297
-height = 210
+width  = 297.0
+height = 210.0
+baseline = 30.0
 
 MM2POINTS = 72.0/25.4
+OUTLINE_WIDTH = 0.1
+CUTLINE_WIDTH = 0.1
+CUT_WIDTH     = 4.0
+CUT_HEIGHT    = 2.0
 
 ###############################################################################
 ################################################################## helpers ####
@@ -14,16 +19,69 @@ MM2POINTS = 72.0/25.4
 def mm (value):
     return float(value)*MM2POINTS
 
+def draw_shape ():
+    cutline_intersect = swide+(snarrow-swide)/sheight*scut
+    
+    # outline
+    c.save()
+    c.move_to(0, 0)
+    c.line_to(swide, 0)
+    c.line_to(snarrow, sheight)
+    c.line_to(0, sheight)
+    c.close_path()
+    c.set_source_rgb(0, 0, 0)
+    c.set_line_width(mm(OUTLINE_WIDTH))
+    c.stroke()
+    c.restore()
+    
+    # cutline
+    c.save()
+    c.move_to(0, scut)
+    c.line_to(cutline_intersect, scut)
+    c.set_source_rgb(1, 0, 0)
+    c.set_line_width(mm(CUTLINE_WIDTH))
+    c.set_dash([2.0, 1.0])
+    c.stroke()
+    c.restore()
+    
+    # cutmarks
+    for x in [0, cutline_intersect]:
+        c.save()
+        
+        # define clipping region
+        c.move_to(0, 0)
+        c.line_to(swide, 0)
+        c.line_to(snarrow, sheight)
+        c.line_to(0, sheight)
+        c.close_path()
+        c.clip()
+        
+        # draw marker
+        c.move_to(x-CUT_WIDTH/2, scut)
+        c.line_to(x, scut-CUT_HEIGHT/2)
+        c.line_to(x+CUT_WIDTH/2, scut)
+        c.line_to(x, scut+CUT_HEIGHT/2)
+        c.close_path()
+        c.set_source_rgb(1, 0, 0)
+        c.set_line_width(mm(CUTLINE_WIDTH))
+        c.stroke()
+        
+        c.restore()
+
 ###############################################################################
 ##################################################################### main ####
 
 # guard: command line arguments
-if len(sys.argv) != 2:
-    print('Syntax: %s FILENAME' % sys.argv[0])
-    print('        %s output.pdf' % sys.argv[0])
+if len(sys.argv) != 6:
+    print('Syntax: %s HEIGHT WIDE NARROW CUT FILENAME' % sys.argv[0])
+    print('        %s 130 43 25 93 output.pdf' % sys.argv[0])
     sys.exit(1)
 
-filename = sys.argv[1]
+sheight  = float(sys.argv[1])
+swide    = float(sys.argv[2])
+snarrow  = float(sys.argv[3])
+scut     = float(sys.argv[4])
+filename =       sys.argv[5]
 
 # initialize canvas
 
@@ -31,9 +89,11 @@ surface = cairo.PDFSurface(filename, mm(width), mm(height))
 c = cairo.Context(surface)
 c.set_line_width(mm(0.5))
 c.scale(MM2POINTS, MM2POINTS)
+c.translate(width/2, baseline)
 
 c.move_to(10, 10)
 c.line_to(110, 160)
 c.set_source_rgb(0, 0, 0)
 c.stroke()
 
+draw_shape()
