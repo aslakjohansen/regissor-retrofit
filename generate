@@ -109,15 +109,18 @@ c.line_to(110, 160)
 c.set_source_rgb(0, 0, 0)
 c.stroke()
 
-c.save()
-for i in range(2):
-    if i!=0:
-        draw_surface_boundary(saheight)
-    c.translate(mm(ssbound)/2, 0)
-    draw_shape()
-    c.translate(swide, 0)
-    c.rotate(atan((swide-snarrow)/sheight))
-    c.translate(mm(ssbound)/2, 0)
-c.restore()
+for mirror in [True, False]:
+    c.save()
+    if mirror:
+        c.scale(-1, 1)
+    for i in range(2):
+        if i!=0:
+            draw_surface_boundary(saheight)
+        c.translate(mm(ssbound)/2, 0)
+        draw_shape()
+        c.translate(swide, 0)
+        c.rotate(atan((swide-snarrow)/sheight))
+        c.translate(mm(ssbound)/2, 0)
+    c.restore()
 
 draw_surface_boundary(sheight)
