@@ -6,7 +6,7 @@ from math import atan, sqrt
 
 width  = 297.0
 height = 210.0
-baseline = 30.0
+baseline = 45.0
 
 MM2POINTS = 72.0/25.4
 OUTLINE_WIDTH = 0.1
