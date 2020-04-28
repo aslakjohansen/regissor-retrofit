@@ -105,7 +105,7 @@ def draw_surface_boundary (length):
 # guard: command line arguments
 if len(sys.argv) != 9:
     print('Syntax: %s HEIGHT WIDE NARROW CUT SURFACE_BOUNDARY FLAP_HEIGHT FLAP_BOUNDARY FILENAME' % sys.argv[0])
-    print('        %s 130 43 25 93 10 100 5 output.pdf' % sys.argv[0])
+    print('        %s 130 43 25 93 10 10 5 output.pdf' % sys.argv[0])
     sys.exit(1)
 
 sheight  = float(sys.argv[1])
